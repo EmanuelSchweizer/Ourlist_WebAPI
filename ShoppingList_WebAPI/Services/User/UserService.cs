@@ -11,7 +11,7 @@ using ShoppingList_WebAPI.DTOs.RefreshTokenDTOs;
 
 namespace ShoppingList_WebAPI.Services;
 
-public class UserService(AppDbContext context, IConfiguration config) : IUserService
+public class UserService(AppDbContext context, IConfiguration config, ISystemUserProvider systemUserProvider) : IUserService
 {
     public async Task<SignInUserResponse> SignUpAsync(SignUpUserRequest req, CancellationToken ct)
     {
@@ -170,19 +170,36 @@ public class UserService(AppDbContext context, IConfiguration config) : IUserSer
     }
 
     public async Task DeleteUserAsync(int adminUserId, int userId, CancellationToken ct)
-    {
-        if(userId == adminUserId)
-            throw new InvalidOperationException("Admin user can't delete his own user");
-        
-        var user = await context.Users.FirstOrDefaultAsync(x => x.Id == userId, ct);
-        if (user == null)
-            throw new KeyNotFoundException("User not found");
-        
-        context.Users.Remove(user);
-        await context.SaveChangesAsync(ct);
-        
-        await RevokeAllRefreshTokensAsync(userId, ct);
-    }
+         {
+             if (userId == adminUserId)
+                 throw new InvalidOperationException("Admin user can't delete his own user");
+     
+             if (userId == systemUserProvider.DeletedUserId)
+                 throw new InvalidOperationException("Cannot delete the system placeholder user");
+     
+             var user = await context.Users.FirstOrDefaultAsync(x => x.Id == userId, ct);
+             if (user == null)
+                 throw new KeyNotFoundException("User not found");
+     
+             //listItems of foreign lists set createdByUserId to detetedUserId placeholder
+             var createdItems = await context.ListItems
+                 .Where(i => i.CreatedByUserId == userId && i.ShoppingList.OwnerId != userId)
+                 .ToListAsync(ct);
+     
+             foreach (var item in createdItems)
+                 item.CreatedByUserId = systemUserProvider.DeletedUserId;
+     
+             var boughtItems = await context.ListItems
+                 .Where(i => i.BoughtByUserId == userId && i.ShoppingList.OwnerId != userId)
+                 .ToListAsync(ct);
+     
+             foreach (var item in boughtItems)
+                 item.BoughtByUserId = systemUserProvider.DeletedUserId;
+     
+             await RevokeAllRefreshTokensAsync(userId, ct);
+             context.Users.Remove(user);
+             await context.SaveChangesAsync(ct);
+         }
 
     public async Task<RefreshTokenResponse> RefreshTokenAsync(RefreshTokenRequest req, CancellationToken ct)
     {

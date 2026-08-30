@@ -10,5 +10,7 @@ public class ShoppingListResponse
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
     public int OwnerId { get; set; }
+    public string OwnerName { get; set; }
+    public string OwnerEmail { get; set; }
     public List<ListItemResponse> Items { get; set; }
 }

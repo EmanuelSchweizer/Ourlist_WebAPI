@@ -39,6 +39,18 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             .HasForeignKey(i => i.ListId)
             .OnDelete(DeleteBehavior.Cascade);
         
+        modelBuilder.Entity<ListItem>()
+            .HasOne(i => i.CreatedByUser)
+            .WithMany()
+            .HasForeignKey(i => i.CreatedByUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+        
+        modelBuilder.Entity<ListItem>()
+            .HasOne(i => i.BoughtByUser)
+            .WithMany()
+            .HasForeignKey(i => i.BoughtByUserId)
+            .OnDelete(DeleteBehavior.SetNull);
+        
         modelBuilder.Entity<SharedList>()
             .HasOne(sl => sl.ShoppingList)
             .WithMany(l => l.SharedWith)

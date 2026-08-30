@@ -12,4 +12,13 @@ public static class ClaimsPrincipalExtensions
         
         return userId;
     }
+    
+    public static string GetUserName(this ClaimsPrincipal user)
+    {
+        var userName = user.FindFirst(ClaimTypes.Name)?.Value;
+        if (string.IsNullOrEmpty(userName))
+            throw new UnauthorizedAccessException("Invalid or missing user name in token");
+        
+        return userName;
+    }
 }

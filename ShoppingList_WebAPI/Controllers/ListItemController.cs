@@ -23,7 +23,8 @@ public class ListItemController(IListItemsService service) : ControllerBase
     public async Task<ActionResult> AddListItem(int listId, AddListItemRequest request, CancellationToken ct = default)
     {
         var userId = User.GetUserId();
-        var response = await service.AddListItemAsync(userId, listId, request, ct);
+        var userName = User.GetUserName();
+        var response = await service.AddListItemAsync(userId, userName, listId, request, ct);
         return Ok(response);
     }
     
