@@ -33,8 +33,17 @@ namespace ShoppingList_WebAPI.Migrations
                     b.Property<bool>("Bought")
                         .HasColumnType("boolean");
 
+                    b.Property<DateTime?>("BoughtAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("BoughtByUserId")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CreatedByUserId")
+                        .HasColumnType("integer");
 
                     b.Property<int>("ListId")
                         .HasColumnType("integer");
@@ -47,6 +56,10 @@ namespace ShoppingList_WebAPI.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BoughtByUserId");
+
+                    b.HasIndex("CreatedByUserId");
 
                     b.HasIndex("ListId");
 
@@ -191,11 +204,26 @@ namespace ShoppingList_WebAPI.Migrations
 
             modelBuilder.Entity("ShoppingList_WebAPI.Models.ListItem", b =>
                 {
+                    b.HasOne("ShoppingList_WebAPI.Models.User", "BoughtByUser")
+                        .WithMany()
+                        .HasForeignKey("BoughtByUserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("ShoppingList_WebAPI.Models.User", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("ShoppingList_WebAPI.Models.ShoppingList", "ShoppingList")
                         .WithMany("Items")
                         .HasForeignKey("ListId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("BoughtByUser");
+
+                    b.Navigation("CreatedByUser");
 
                     b.Navigation("ShoppingList");
                 });

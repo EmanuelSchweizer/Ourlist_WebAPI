@@ -24,7 +24,7 @@ builder.Configuration
 //Services
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
-builder.Services.AddSingleton<ISystemUserProvider, SystemUserProvider>();
+builder.Services.AddScoped<ISystemUserProvider, SystemUserProvider>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IShoppingListService, ShoppingListService>();
 builder.Services.AddScoped<IListItemsService, ListItemsService>();
