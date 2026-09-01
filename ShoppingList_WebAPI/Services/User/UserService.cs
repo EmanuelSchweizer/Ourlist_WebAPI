@@ -287,7 +287,8 @@ public class UserService(AppDbContext context, IConfiguration config, ISystemUse
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role, role.Name)
+                new Claim(ClaimTypes.Role, role.Name),
+                new Claim(ClaimTypes.Name, user.Name)
             }),
             Expires = DateTime.UtcNow.AddMinutes(15),
             Issuer = config["Jwt:Issuer"],
