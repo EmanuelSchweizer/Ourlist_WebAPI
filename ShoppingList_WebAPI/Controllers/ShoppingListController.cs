@@ -18,14 +18,6 @@ public class ShoppingListController(IShoppingListService service) : ControllerBa
         var response = await service.GetAllListsAsync(userId, ct);
         return Ok(response);
     }
-    
-    [HttpGet("{listId}")]
-    public async Task<ActionResult> GetList(int listId, CancellationToken ct = default)
-    {
-        var userId = User.GetUserId();
-        var response = await service.GetListAsync(userId, listId, ct);
-        return Ok(response);
-    }
 
     [HttpPost]
     public async Task<ActionResult> CreateList(CreateShoppingListRequest req, CancellationToken ct = default)

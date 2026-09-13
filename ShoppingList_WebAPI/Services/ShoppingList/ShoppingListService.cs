@@ -41,42 +41,6 @@ public class ShoppingListService(AppDbContext context) : IShoppingListService
         return allLists;
     }
 
-    public async Task<ShoppingListResponse> GetListAsync(int userId, int listId, CancellationToken ct)
-    {
-        var list = await context.ShoppingLists
-            .Where(x => x.OwnerId == userId && x.Id == listId)
-            .Select(x => new ShoppingListResponse
-            {
-                Id = x.Id,
-                Name = x.Name,
-                CreatedAt = x.CreatedAt,
-                UpdatedAt = x.UpdatedAt,
-                OwnerId = x.OwnerId,
-                OwnerName =  x.Owner.Name,
-                OwnerEmail = x.Owner.Email,
-                Items = x.Items.Select(i => new ListItemResponse
-                {
-                    Id = i.Id,
-                    Name = i.Name,
-                    Bought = i.Bought,
-                    CreatedAt = i.CreatedAt,
-                    CreatedByUser = new UserSummary { Id = i.CreatedByUser.Id, Name = i.CreatedByUser.Name },
-                    UpdatedAt = i.UpdatedAt,
-                    BoughtAt = i.BoughtAt,
-                    BoughtByUser = i.BoughtByUser != null
-                        ? new UserSummary { Id = i.BoughtByUser.Id, Name = i.BoughtByUser.Name }
-                        : null,
-                    ListId = i.ListId
-                }).ToList()
-            })
-            .FirstOrDefaultAsync(ct);
-        
-        if (list == null)
-            throw new KeyNotFoundException("List not found");
-
-        return list;
-    }
-
     public async Task<ShoppingListResponse> CreateListAsync(int userId, CreateShoppingListRequest req, CancellationToken ct)
     {
         var owner = await context.Users.FirstOrDefaultAsync(x => x.Id == userId, ct);

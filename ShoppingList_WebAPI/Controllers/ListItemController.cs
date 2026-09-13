@@ -11,14 +11,6 @@ namespace ShoppingList_WebAPI.Controllers;
 [Authorize]
 public class ListItemController(IListItemsService service) : ControllerBase
 {
-    [HttpGet]
-    public async Task<ActionResult> GetListItems(int listId, CancellationToken ct = default)
-    {
-        var userId = User.GetUserId();
-        var response = await service.GetListItemsAsync(userId, listId, ct);
-        return Ok(response);
-    }
-    
     [HttpPost]
     public async Task<ActionResult> AddListItem(int listId, AddListItemRequest request, CancellationToken ct = default)
     {
