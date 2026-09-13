@@ -12,5 +12,5 @@ public class ShoppingListResponse
     public int OwnerId { get; set; }
     public string OwnerName { get; set; }
     public string OwnerEmail { get; set; }
-    public List<ListItemResponse> Items { get; set; }
+    public IReadOnlyList<ListItemResponse> Items { get; set; }
 }

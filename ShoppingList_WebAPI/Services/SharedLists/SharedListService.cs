@@ -7,6 +7,27 @@ namespace ShoppingList_WebAPI.Services.SharedLists;
 
 public class SharedListService(AppDbContext context) : ISharedListService
 {
+    public async Task<SharedUserResponse> GetSharedUserList(int ownerId, int listId, CancellationToken ct)
+    {
+        var listExist = await context.ShoppingLists
+            .AnyAsync(x => x.Id == listId && x.OwnerId == ownerId, ct);
+        if (!listExist)
+            throw new KeyNotFoundException("List not found");
+
+        var sharedUsers = await context.SharedLists.Select(x => new SharedUser
+        {
+            Id = x.UserId,
+            Name = x.User.Name,
+            Email = x.User.Email,
+        }).ToListAsync(ct);
+
+        return new SharedUserResponse
+        {
+            listId = listId,
+            SharedUsers = sharedUsers,
+        };
+    }
+    
     public async Task ShareListAsync(int ownerId, int listId, SharedListRequest req, CancellationToken ct)
     {
         var listExist = await context.ShoppingLists

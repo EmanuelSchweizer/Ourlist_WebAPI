@@ -8,7 +8,7 @@ namespace ShoppingList_WebAPI.Services;
 
 public class ShoppingListService(AppDbContext context) : IShoppingListService
 {
-    public async Task<List<ShoppingListResponse>> GetAllListsAsync(int userId, CancellationToken ct)
+    public async Task<IReadOnlyList<ShoppingListResponse>> GetAllListsAsync(int userId, CancellationToken ct)
     {
         var allLists = await context.ShoppingLists
             .Where(x => x.OwnerId == userId || x.SharedWith.Any(s => s.UserId == userId ))
@@ -79,8 +79,8 @@ public class ShoppingListService(AppDbContext context) : IShoppingListService
 
     public async Task<ShoppingListResponse> CreateListAsync(int userId, CreateShoppingListRequest req, CancellationToken ct)
     {
-        var userExists = await context.Users.AnyAsync(x => x.Id == userId, ct);
-        if (!userExists)
+        var owner = await context.Users.FirstOrDefaultAsync(x => x.Id == userId, ct);
+        if (owner == null)
             throw new KeyNotFoundException("User not found");
 
         var newList = new ShoppingList
@@ -90,10 +90,10 @@ public class ShoppingListService(AppDbContext context) : IShoppingListService
             UpdatedAt = DateTime.UtcNow,
             OwnerId = userId
         };
-        
+
         context.ShoppingLists.Add(newList);
         await context.SaveChangesAsync(ct);
-        
+
         return new ShoppingListResponse
         {
             Id = newList.Id,
@@ -101,8 +101,8 @@ public class ShoppingListService(AppDbContext context) : IShoppingListService
             CreatedAt = newList.CreatedAt,
             UpdatedAt = newList.UpdatedAt,
             OwnerId = newList.OwnerId,
-            OwnerName = newList.Owner.Name,
-            OwnerEmail = newList.Owner.Email,
+            OwnerName = owner.Name,
+            OwnerEmail = owner.Email,
             Items = new List<ListItemResponse>()
         };
     }
@@ -138,11 +138,21 @@ public class ShoppingListService(AppDbContext context) : IShoppingListService
     {
         var list = await context.ShoppingLists
             .FirstOrDefaultAsync(x => x.Id == listId && x.OwnerId == userId, ct);
-        
-        if (list == null)
+
+        if (list != null)
+        {
+            context.ShoppingLists.Remove(list);
+            await context.SaveChangesAsync(ct);
+            return;
+        }
+
+        var sharedList = await context.SharedLists
+            .FirstOrDefaultAsync(x => x.ListId == listId && x.UserId == userId, ct);
+
+        if (sharedList == null)
             throw new KeyNotFoundException("List not found");
-        
-        context.ShoppingLists.Remove(list);
+
+        context.SharedLists.Remove(sharedList);
         await context.SaveChangesAsync(ct);
     }
 }

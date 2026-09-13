@@ -4,7 +4,7 @@ namespace ShoppingList_WebAPI.Services;
 
 public interface IShoppingListService
 {
-    Task<List<ShoppingListResponse>> GetAllListsAsync(int userId, CancellationToken ct);
+    Task<IReadOnlyList<ShoppingListResponse>> GetAllListsAsync(int userId, CancellationToken ct);
     Task<ShoppingListResponse> GetListAsync(int userId, int listId, CancellationToken ct);
     Task<ShoppingListResponse> CreateListAsync(int userId, CreateShoppingListRequest req, CancellationToken ct);
     Task<ShoppingListResponse> UpdateListAsync(int userId, int listId, UpdateShoppingListRequest req, CancellationToken ct);
