@@ -44,6 +44,8 @@ public static class AuthExtensions
         {
             options.AddPolicy("RequireAdmin", policy =>
                 policy.RequireRole("admin"));
+            options.AddPolicy("RequireAdminOrDemoAdmin", policy =>
+                policy.RequireRole("admin", "demoAdmin"));
         });
 
         return services;

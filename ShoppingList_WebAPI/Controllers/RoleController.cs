@@ -10,7 +10,7 @@ namespace ShoppingList_WebAPI.Controllers;
 public class RoleController(IRolesService service) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<List<RoleResponse>>> GetAllRoles(CancellationToken ct = default)
+    public async Task<ActionResult<IReadOnlyList<RoleResponse>>> GetAllRoles(CancellationToken ct = default)
     {
         var response = await service.GetAllRolesAsync(ct);
         return Ok(response);

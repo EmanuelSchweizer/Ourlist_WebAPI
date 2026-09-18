@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using ShoppingList_WebAPI.Data;
 using ShoppingList_WebAPI.DTOs.RefreshTokenDTOs;
 using ShoppingList_WebAPI.DTOs.UserDTOs;
 using ShoppingList_WebAPI.Services;
@@ -75,10 +76,13 @@ public class UserController(IUserService service) : ControllerBase
         return NoContent();
     }
 
-    [Authorize(Policy = "RequireAdmin")]
+    [Authorize(Policy = "RequireAdminOrDemoAdmin")]
     [HttpGet("allUsers")]
-    public async Task<ActionResult<List<UserResponse>>> GetAllUsersAsync(CancellationToken ct = default)
+    public async Task<ActionResult<IReadOnlyList<UserResponse>>> GetAllUsersAsync(CancellationToken ct = default)
     {
+        if (User.IsInRole("demoAdmin"))
+            return Ok(DemoData.Users);
+
         var response = await service.GetAllUsersAsync(ct);
         return Ok(response);
     }

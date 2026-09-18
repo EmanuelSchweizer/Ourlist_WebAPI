@@ -4,5 +4,5 @@ namespace ShoppingList_WebAPI.Services.Roles;
 
 public interface IRolesService
 {
-    Task<List<RoleResponse>> GetAllRolesAsync(CancellationToken ct);
+    Task<IReadOnlyList<RoleResponse>> GetAllRolesAsync(CancellationToken ct);
 }

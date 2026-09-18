@@ -253,7 +253,7 @@ public class UserService(AppDbContext context, IConfiguration config, ISystemUse
         await context.SaveChangesAsync(ct);
     }
 
-    public async Task<List<UserResponse>> GetAllUsersAsync(CancellationToken ct)
+    public async Task<IReadOnlyList<UserResponse>> GetAllUsersAsync(CancellationToken ct)
     {
         var users = await context.Users
             .Include(x => x.Role)

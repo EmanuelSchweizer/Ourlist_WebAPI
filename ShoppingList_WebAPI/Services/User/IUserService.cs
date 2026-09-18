@@ -13,5 +13,5 @@ public interface IUserService
     Task DeleteUserAsync(int adminUserId, int userId, CancellationToken ct);
     Task<RefreshTokenResponse> RefreshTokenAsync(RefreshTokenRequest req, CancellationToken ct);
     Task LogoutAsync(RefreshTokenRequest req, CancellationToken ct);
-    Task<List<UserResponse>> GetAllUsersAsync(CancellationToken ct);
+    Task<IReadOnlyList<UserResponse>> GetAllUsersAsync(CancellationToken ct);
 }
