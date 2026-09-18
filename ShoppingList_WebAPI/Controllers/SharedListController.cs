@@ -12,13 +12,12 @@ namespace ShoppingList_WebAPI.Controllers;
 [Authorize]
 public class SharedListController(ISharedListService service) : ControllerBase
 {
-    [EnableRateLimiting("strict")]
     [HttpGet("{listId}")]
     public async Task<ActionResult> GetSharedUserList(int listId, CancellationToken ct = default)
     {
         var ownerId = User.GetUserId();
-        await service.GetSharedUserList(ownerId, listId, ct);
-        return NoContent();
+        var response = await service.GetSharedUserList(ownerId, listId, ct);
+        return Ok(response);
     }
     
     [EnableRateLimiting("strict")]

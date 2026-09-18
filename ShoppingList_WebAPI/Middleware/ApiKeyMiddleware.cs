@@ -9,7 +9,8 @@ public class ApiKeyMiddleware
     {
         "/openapi",
         "/scalar",
-        "/swagger"
+        "/swagger",
+        "/hubs"
     };
 
     public ApiKeyMiddleware(RequestDelegate next)
