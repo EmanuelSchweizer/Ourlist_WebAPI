@@ -19,13 +19,17 @@ public static class ApplicationServicesExtensions
         return services;
     }
 
-    public static IServiceCollection AddSignalRWithCors(this IServiceCollection services)
+    public static IServiceCollection AddSignalRWithCors(this IServiceCollection services, IConfiguration configuration)
     {
+        var allowedOrigins = configuration.GetSection("Cors:AllowedOrigins").Get<string[]>();
+        if (allowedOrigins is not { Length: > 0 })
+            allowedOrigins = ["http://localhost:3000"];
+
         services.AddSignalR();
         services.AddCors(options =>
         {
             options.AddPolicy("SignalRPolicy", policy =>
-                policy.WithOrigins("http://localhost:3000")
+                policy.WithOrigins(allowedOrigins)
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials());

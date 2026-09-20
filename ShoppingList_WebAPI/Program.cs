@@ -19,7 +19,7 @@ builder.Configuration
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddApplicationServices();
-builder.Services.AddSignalRWithCors();
+builder.Services.AddSignalRWithCors(builder.Configuration);
 builder.Services.AddDbContext<AppDbContext>(opt
     => opt.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddJwtAuthentication(builder.Configuration);
