@@ -1,26 +1,19 @@
-using Microsoft.EntityFrameworkCore;
 using ShoppingList_WebAPI.Data;
 using ShoppingList_WebAPI.Models;
 using ShoppingList_WebAPI.Services.Roles;
+using ShoppingList_WebAPI.Tests.TestHelpers;
 
 namespace ShoppingList_WebAPI.Tests.Services;
 
 public class RoleServiceTests
 {
-    public static AppDbContext CreateContext()
-    {
-        var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .Options;
-        return new AppDbContext(options);
-    }
+    private readonly AppDbContext _context = TestDbContextFactory.Create();
 
     [Fact]
     public async Task GetAllRolesAsync_WhenNoRoles_ReturnsEmptyList()
     {
         //Arrange
-        var context = CreateContext();
-        var service = new RolesService(context);
+        var service = new RolesService(_context);
         //Act
         var result = await service.GetAllRolesAsync(CancellationToken.None);
 
@@ -32,8 +25,6 @@ public class RoleServiceTests
     public async Task GetAllRolesAsync_WhenRolesExist_ReturnsRoles()
     {
         //Arrange
-        var context = CreateContext();
-
         var roles = new List<Role>
         {
             new() { Id = 1, Name = "user" },
@@ -41,10 +32,10 @@ public class RoleServiceTests
             new() { Id = 3, Name = "demoAdmin" }
         };
 
-        context.Roles.AddRange(roles);
-        await context.SaveChangesAsync(CancellationToken.None);
+        _context.Roles.AddRange(roles);
+        await _context.SaveChangesAsync(CancellationToken.None);
 
-        var service = new RolesService(context);
+        var service = new RolesService(_context);
 
         //Act
         var result = await service.GetAllRolesAsync(CancellationToken.None);
@@ -56,6 +47,4 @@ public class RoleServiceTests
         Assert.Contains(result, r => r.Name == "demoAdmin");
         Assert.Equal(3, result.Count);
     }
-    
-    
 }
