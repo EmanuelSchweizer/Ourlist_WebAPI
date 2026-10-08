@@ -1,0 +1,36 @@
+name: Deploy Backend to AWS
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1
+
+      - id: ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push image
+        run: |
+          docker build -t ${{ steps.ecr.outputs.registry }}/ourlist-backend:latest .
+          docker push ${{ steps.ecr.outputs.registry }}/ourlist-backend:latest
+
+      - name: Redeploy ECS service
+        run: |
+          aws ecs update-service \
+            --cluster default \
+            --service ourlist-backend-9079 \
+            --force-new-deployment
+          aws ecs wait services-stable \
+            --cluster default \
+            --services ourlist-backend-9079

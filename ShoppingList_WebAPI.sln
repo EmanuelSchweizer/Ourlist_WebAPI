@@ -13,4 +13,6 @@ Global
 		{619811AF-CCBC-4F13-9981-CAAC41574E72}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{619811AF-CCBC-4F13-9981-CAAC41574E72}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+	EndGlobalSection
 EndGlobal
