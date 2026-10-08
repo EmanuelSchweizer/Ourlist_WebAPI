@@ -54,4 +54,6 @@ app.MapControllers();
 app.MapHub<ShoppingListHub>("/hubs/shoppingList")
     .DisableRateLimiting();
 
+app.MapGet("/health", () => Results.Ok());
+
 app.Run();
