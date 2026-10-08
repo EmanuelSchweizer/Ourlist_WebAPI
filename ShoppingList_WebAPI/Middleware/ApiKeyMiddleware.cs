@@ -2,7 +2,6 @@ namespace ShoppingList_WebAPI.Middleware;
 
 public class ApiKeyMiddleware
 {
-    private readonly RequestDelegate _next;
     private const string API_KEY_HEADER = "X-API-Key";
 
     private static readonly string[] ExemptPaths =
@@ -10,8 +9,11 @@ public class ApiKeyMiddleware
         "/openapi",
         "/scalar",
         "/swagger",
-        "/hubs"
+        "/hubs",
+        "/health"
     };
+
+    private readonly RequestDelegate _next;
 
     public ApiKeyMiddleware(RequestDelegate next)
     {
